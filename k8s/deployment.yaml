@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-system-upload-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-system-upload-v1
+  template:
+    metadata:
+      labels:
+        app: file-system-upload-v1
+    spec:
+      containers:
+        - name: file-system-upload-v1
+          image: spamyouracc-spec/file-system-upload-v1:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-system-upload-v1
+spec:
+  type: NodePort
+  selector:
+    app: file-system-upload-v1
+  ports:
+    - port: 80
+      targetPort: 3000
+      nodePort: 30080
+      protocol: TCP
