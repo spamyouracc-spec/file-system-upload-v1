@@ -15,13 +15,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                bat 'node -v'
                 bat 'npm install'
             }
         }
 
         stage('Build App') {
             steps {
-                bat 'npm test || exit 0'
+                bat 'npm test'
             }
         }
 
@@ -35,7 +36,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat '''
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker login -u %DOCKER_USER% --password-stdin <<< %DOCKER_PASS%
                         docker push %DOCKER_IMAGE%:%DOCKER_TAG%
                     '''
                 }
